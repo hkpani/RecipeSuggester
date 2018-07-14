@@ -2,8 +2,10 @@ import urllib3
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import random
 from time import sleep
 import json
+from pymongo import MongoClient
 
 def get_ingredients(url_to_scrape, ingredients):
     #create PoolManager for HTTP requests
@@ -15,7 +17,6 @@ def get_ingredients(url_to_scrape, ingredients):
 
     soup = BeautifulSoup(source_code.data,'lxml')
 
-    #block = soup.find_all('ul',class_='checklist dropdownwrapper list-ingredients-1')
     li_block = soup.find_all('li',class_='checkList__line')
     print(li_block)
 
@@ -29,6 +30,65 @@ def get_ingredients(url_to_scrape, ingredients):
 
     #append to the caller's list
     ingredients.append(temp_ingredients)
+
+def store_to_db(json_data):
+    #creates a client instance to communicate with the running Mongo Database
+    #without passing in parameters we default to connecting to the localhost
+    client = MongoClient()
+
+    #Databases are accessed as attributes
+    #if database doesn't exist itll be created
+    db = client.recipe_db
+
+    #selecting which COLLECTION to post data to
+    posts  = db.recipes
+
+    #insert json formatted data into recipes db
+    posts.insert_many(json_data)
+
+def read_from_db(base_tag, additives):
+    #This method narrows down the list of URLs to send to the front-end method call 
+    #based on the base recipe additives the user has input for a more refined search
+
+    #creates a client instance to communicate with the running Mongo Database
+    #without passing in parameters we default to connecting to the localhost
+    client = MongoClient()
+
+    #additives = set(additives)
+
+    result_list = []
+
+    #Databases are accessed as attributes
+    #if database doesn't exist itll be created
+    db = client.recipe_db
+
+    #selecting which COLLECTION to post data to
+    posts  = db.recipes
+
+    search = posts.find({'Tag':base_tag})
+
+    for x in search:
+        in_list = True
+        #if subset of current ingredients append URL to the result list
+        for y in additives:
+            #Make sure all the additives are in the recipe before appending to the return list
+            if not any(y in s for s in x['Ingredients']):
+                in_list = False
+
+        if in_list:
+            print('here')
+            result_list.append(x['URL'])
+
+    return result_list
+
+def return_curated_URL(URL_list):
+    #This method is meant to take the output list of the narrowed list generated from
+    #the read_from_db method and spit out a random URL from the list
+    random.seed(a=None)
+
+    curated_elem = random.randint(0,len(URL_list)-1)
+
+    return URL_list[curated_elem]
 
 def scrape_recipe(num_pages,scrape_url,df_update,keyword):
     # Columns for the dataframe
@@ -79,7 +139,12 @@ def scrape_recipe(num_pages,scrape_url,df_update,keyword):
         #Don't want to send Too many Requests to the website so sleep for a while 
         sleep(2)
 
-    json_data = df_update.to_json(orient='records')
+    #json_data = df_update.to_json(orient='records')
+    json_data = df_update.to_dict('records')
+
+    #print(json_data)
+
+    store_to_db(json_data)
 
     #for now, lets print our json formatted data that we scraped
-    print(json_data)
+    #print(json_data)
