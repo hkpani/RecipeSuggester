@@ -46,7 +46,7 @@ def store_to_db(json_data):
     #insert json formatted data into recipes db
     posts.insert_many(json_data)
 
-def read_from_db(base_tag, additives):
+def read_from_db(base_tag, additives,userID):
     #This method narrows down the list of URLs to send to the front-end method call 
     #based on the base recipe additives the user has input for a more refined search
 
@@ -65,7 +65,8 @@ def read_from_db(base_tag, additives):
     #selecting which COLLECTION to post data to
     posts  = db.recipes
 
-    search = posts.find({'Tag':base_tag})
+    #finding all recipes with the userID AND base recipe specified 
+    search = posts.find({'user_id':userID,'Tag':base_tag})
 
     for x in search:
         in_list = True
@@ -76,7 +77,6 @@ def read_from_db(base_tag, additives):
                 in_list = False
 
         if in_list:
-            print('here')
             result_list.append(x['URL'])
 
     return result_list
@@ -90,9 +90,9 @@ def return_curated_URL(URL_list):
 
     return URL_list[curated_elem]
 
-def scrape_recipe(num_pages,scrape_url,df_update,keyword):
+def scrape_recipe(num_pages,scrape_url,df_update,keyword,userID):
     # Columns for the dataframe
-    df_columns = ['Tag','Name','URL','Ingredients']
+    df_columns = ['user_id','Tag','Name','URL','Ingredients']
     #create PoolManager for HTTP requests
     http = urllib3.PoolManager()
 
@@ -129,7 +129,7 @@ def scrape_recipe(num_pages,scrape_url,df_update,keyword):
             #this step gets all the ingredients, quantity and unit MM for each row
             get_ingredients(temp_link['href'],ingredients)
 
-        df_data = {df_columns[0]:[dish_tag for x in range(len(dish))],df_columns[1]:dish,df_columns[2]:link,df_columns[3]:ingredients}
+        df_data = {df_columns[0]:[userID for x in range(len(dish))],df_columns[1]:[dish_tag for x in range(len(dish))],df_columns[2]:dish,df_columns[3]:link,df_columns[4]:ingredients}
 
         #append the collected dishes and respective URLs to the dataframe
         df_temp = pd.DataFrame(data=df_data)

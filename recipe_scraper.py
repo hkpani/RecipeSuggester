@@ -10,6 +10,7 @@ from scraping_functions import return_curated_URL
 last_page = 2
 ingredient_keyword = 'chicken parmesan'
 additive_list = ['salt','oregano']
+user_id = 'Hank Hill'
 
 #create an initial dataframe to append to
 df = pd.DataFrame() 
@@ -26,9 +27,9 @@ else:
     search_url = "https://www.allrecipes.com/search/results/?wt=" + ingredient_keyword + "&sort=re"
 
 #max number of pages this scrapes is 10 anyways
-#scrape_recipe(last_page,search_url,df,ingredient_keyword)
+#scrape_recipe(last_page,search_url,df,ingredient_keyword,user_id)
 
-curated_list = read_from_db(ingredient_keyword,additive_list)
+curated_list = read_from_db(ingredient_keyword,additive_list,user_id)
 #This is to make sure we aren't putting an illegal range with the rand function
 if len(curated_list) > 0:
 	print(return_curated_URL(curated_list))
