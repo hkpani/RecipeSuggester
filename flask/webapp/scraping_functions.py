@@ -6,6 +6,7 @@ import random
 from time import sleep
 import json
 from pymongo import MongoClient
+from webapp import mongo
 
 def get_ingredients(url_to_scrape, ingredients):
     #create PoolManager for HTTP requests
@@ -32,16 +33,10 @@ def get_ingredients(url_to_scrape, ingredients):
     ingredients.append(temp_ingredients)
 
 def store_to_db(json_data):
-    #creates a client instance to communicate with the running Mongo Database
-    #without passing in parameters we default to connecting to the localhost
-    client = MongoClient()
 
-    #Databases are accessed as attributes
-    #if database doesn't exist itll be created
-    db = client.recipe_db
-
-    #selecting which COLLECTION to post data to
-    posts  = db.recipes
+    #using the pymongo object in the app we made, we can just directly access members
+    #select the recipes collection which is a member of mongo(recipe_db)
+    posts = mongo.db.recipes
 
     #insert json formatted data into recipes db
     posts.insert_many(json_data)
@@ -50,20 +45,11 @@ def read_from_db(base_tag, additives,userID):
     #This method narrows down the list of URLs to send to the front-end method call 
     #based on the base recipe additives the user has input for a more refined search
 
-    #creates a client instance to communicate with the running Mongo Database
-    #without passing in parameters we default to connecting to the localhost
-    client = MongoClient()
-
-    #additives = set(additives)
-
     result_list = []
 
-    #Databases are accessed as attributes
-    #if database doesn't exist itll be created
-    db = client.recipe_db
-
-    #selecting which COLLECTION to post data to
-    posts  = db.recipes
+    #using the pymongo object in the app we made, we can just directly access members
+    #select the recipes collection which is a member of mongo(recipe_db)
+    posts = mongo.db.recipes
 
     #finding all recipes with the userID AND base recipe specified 
     search = posts.find({'user_id':userID,'Tag':base_tag})
@@ -148,3 +134,37 @@ def scrape_recipe(num_pages,scrape_url,df_update,keyword,userID):
 
     #for now, lets print our json formatted data that we scraped
     #print(json_data)
+
+def get_last_search(user_id):
+    #returns last searched recipe
+    posts = mongo.db.userData
+
+    #since data is for one user, just use find_one
+    user = posts.find_one({'user_id':user_id})
+
+    search = user['last_search']
+
+    if search is not None:
+        return search
+    else:
+        return "User has not made a search yet"
+
+def set_last_search(user_id,URL):
+    #use set method to update the last search value
+    posts = mongo.db.userData
+
+    posts.update({'user_id':user_id},{'$set': {'last_search':URL}})
+
+def get_saved_recipes(user_id):
+    #returns current list of saved recipes
+    posts = mongo.db.userData
+
+    search = posts.find_one({'user_id':user_id})
+
+    return search['saved_recipes']
+
+def set_saved_recipes(user_id,URL):
+    #use push method to append the newly saved recipe to the list
+    posts = mongo.db.userData
+
+    posts.update({'user_id':user_id},{'$push': {'saved_recipes':URL}})

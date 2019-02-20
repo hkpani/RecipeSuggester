@@ -1,0 +1,17 @@
+{%extends "base.html"%}
+
+
+{%block content%}
+	{%if user%}
+	{%if user.username%}
+	<h1>What's For Dinner, {{user.username}}?</h1>
+	{%for post in recipes%}
+	<div><p>{{post.chef}}'s last viewed recipe: <b>{{post.recipe}}</b></p></div>
+	{%endfor%}
+	{%else%}
+	<h1>Welcome, Please Register/Login above</h1>
+	{%endif%}
+	{%else%}
+	<h1>Welcome, Please Register/Login above</h1>
+	{%endif%}
+{%endblock%}

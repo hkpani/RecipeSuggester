@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sign In to your Recipe Suggester account</h1>
+    <form action="" method="POST" novalidate> <!--action just sends information to the same URL, post is used instead of get because POST sends the form data instead of just adding it to the URL like a GET request would do -->
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br> <!--forms don't need extra HTML tags because flask-wtf already supplies the HTML -->
+            {{ form.username(size=32) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+        </p>
+        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
