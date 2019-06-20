@@ -76,7 +76,10 @@ def return_curated_URL(URL_list):
 
     return URL_list[curated_elem]
 
-def scrape_recipe(num_pages,scrape_url,df_update,keyword,userID):
+def scrape_recipe(num_pages,scrape_url,keyword,userID):
+    #empty dataframe to append to
+    df_update = pd.DataFrame()
+
     # Columns for the dataframe
     df_columns = ['user_id','Tag','Name','URL','Ingredients']
     #create PoolManager for HTTP requests
@@ -130,10 +133,26 @@ def scrape_recipe(num_pages,scrape_url,df_update,keyword,userID):
 
     #print(json_data)
 
-    store_to_db(json_data)
+    if json_data: #check if there is data before storing in mongo collection, otherwise error will be thrown
+        store_to_db(json_data)
 
-    #for now, lets print our json formatted data that we scraped
+    #Debug : print our json formatted data that we scraped
     #print(json_data)
+
+def create_url(recipe):
+    keyword_list = recipe.split()
+
+    if len(keyword_list)>1:
+        #append %20 after earch search word
+        for x in keyword_list:
+            search_url = "https://www.allrecipes.com/search/results/?wt=" + x + "%20" 
+        search_url += "&sort=re"
+    else:
+        #don't have to format string with %20 after each input word
+        search_url = "https://www.allrecipes.com/search/results/?wt=" + ingredient_keyword + "&sort=re"
+
+    return search_url
+
 
 def get_last_search(user_id):
     #returns last searched recipe
