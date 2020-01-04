@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Recipe Search</h1>
+    <form action="" method="POST" novalidate> <!--action just sends information to the same URL, post is used instead of get because POST sends the form data instead of just adding it to the URL like a GET request would do -->
+        {{ inputform.hidden_tag() }}
+        <p>
+            {{ inputform.base_recipe.label }}<br> <!--forms don't need extra HTML tags because flask-wtf already supplies the HTML -->
+            {{ inputform.base_recipe(size=32) }}
+        </p>
+        <p>
+            {{ inputform.additive1.label }}<br> <!--forms don't need extra HTML tags because flask-wtf already supplies the HTML -->
+            {{ inputform.additive1(size=32) }}
+        </p>
+        <p>
+            {{ inputform.additive2.label }}<br> <!--forms don't need extra HTML tags because flask-wtf already supplies the HTML -->
+            {{ inputform.additive2(size=32) }}
+        </p>
+        <p>{{ inputform.submit() }}</p>
+    </form>
+    {%if recipe%}
+    <p>Carefully Selected Recipe: {{recipe}}</p>
+    <form action="" method="POST" novalidate>
+        {{saveform.csrf_token()}} <!--csrf_token protects request data to not be lost, normally something like AJAX would be used to do so --> 
+        <p>
+            {{saveform.recipe(value=recipe)}}
+            {{saveform.submit()}}
+        </p>
+    </form>
+    <form action="" method="POST" novalidate>
+        {{discardform.hidden_tag()}}
+        <p>
+            {{discardform.submit()}}
+        </p>
+    </form>
+
+    {%endif%}
+{% endblock %}
