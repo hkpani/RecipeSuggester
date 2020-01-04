@@ -7,7 +7,7 @@
         {%endif%}
     </head>
     <body>
-        <div>Recipe Suggester: <a href="/index">Home</a><a href="/recipesearch">Recipe Search</a> <a href="/recipes">Recipe List</a> <a href="/login">Login</a> <a href="/logout">Logout</a> <a href="/register">Register</a> {%if user%}User:{{user.username}}{%endif%}</div>
+        <div>Recipe Suggester: <a href="/index">Home</a> <a href="/recipesearch">Recipe Search</a> <a href="/recipes">Recipe List</a> <a href="/login">Login</a> <a href="/logout">Logout</a> <a href="/register">Register</a> {%if user%}User:{{user.username}}{%endif%}</div>
         <hr>
         {% with messages = get_flashed_messages() %} <!--if any flashed messages from routes.py (like from forms) display them -->
         {% if messages %}

@@ -18,21 +18,5 @@
         </p>
         <p>{{ inputform.submit() }}</p>
     </form>
-    {%if recipe%}
-    <p>Carefully Selected Recipe: {{recipe}}</p>
-    <form action="" method="POST" novalidate>
-        {{saveform.csrf_token()}} <!--csrf_token protects request data to not be lost, normally something like AJAX would be used to do so --> 
-        <p>
-            {{saveform.recipe(value=recipe)}}
-            {{saveform.submit()}}
-        </p>
-    </form>
-    <form action="" method="POST" novalidate>
-        {{discardform.hidden_tag()}}
-        <p>
-            {{discardform.submit()}}
-        </p>
-    </form>
 
-    {%endif%}
 {% endblock %}

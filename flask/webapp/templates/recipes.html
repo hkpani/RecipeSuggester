@@ -2,16 +2,23 @@
 
 
 {%block content%}
-	{%if user%}
-	{%if user.username%}
-	<h1>{{user.username}}'s Saved Recipes</h1>
-	{%for post in recipes%}
-	<div><p>Link: {{post}}</b></p></div>
-	{%endfor%}
-	{%else%}
+	{%if user.username == None%}
 	<h1>Looks like the user forgot to set a username</h1>
 	{%endif%}
-	{%else%}
-	<h1>User is missing...</h1>
-	{%endif%}
+	{%if recipes != None%}
+    <p>Carefully Selected Recipe: {{recipes.recipe}}</p>
+    <form action="" method="POST" novalidate>
+        {{saveform.csrf_token()}} <!--csrf_token protects request data to not be lost, normally something like AJAX would be used to do so --> 
+        <p>
+            {{saveform.recipe(value=recipe)}}
+            {{saveform.submit()}}
+        </p>
+    </form>
+    <form action="" method="POST" novalidate>
+        {{discardform.hidden_tag()}}
+        <p>
+            {{discardform.submit()}}
+        </p>
+    </form>
+    {%endif%}
 {%endblock%}

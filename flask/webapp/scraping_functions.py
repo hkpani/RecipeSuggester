@@ -105,14 +105,7 @@ def scrape_recipe(num_pages,scrape_url,keyword,userID):
         for y in block:
             temp_title = y.find(name='img',title=True)
             temp_link = y.find(name='a',href=True)
-            #check using regex to see if title has the keyword in it
-            #first convert to lowercase
-            #check_string = temp_title['title'].lower()
-            #search function goes through the string and returns match object if found
-            #if re.search(keyword.lower(),check_string):
-            #    dish.append(temp_title['title'])
-            #    link.append(temp_link['href'])
-            #    get_ingredients(link)
+
             dish.append(temp_title['title'])
             link.append(temp_link['href'])
             #this step gets all the ingredients, quantity and unit MM for each row
