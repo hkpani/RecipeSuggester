@@ -145,7 +145,7 @@ def recipesearch():
                 scrape_recipe(2,create_url(inputform.base_recipe.data),inputform.base_recipe.data,user['username'])
                 recipe_list = read_from_db(inputform.base_recipe.data,[inputform.additive1.data,inputform.additive2.data],session['username'])
                 if recipe_list: # can't append if nothing is scraped from the website
-                    curated_recipe.append(return_curated_URLy(recipe_list))
+                    curated_recipe.append(return_curated_URL(recipe_list))
 
 
             #second time around means invalid recipe was entered
